@@ -1,0 +1,11 @@
+Biblioteche
+I lettori che frequentano la biblioteca hanno una tessera su cui è scritto il nome e l’indirizzo. 
+I lettori richieste di prestito per i libri che sono catalogati nella biblioteca. 
+
+I libri hanno un titolo, una lista di autori e possono esistere in diverse copie. 
+Tutti i libri contenuti nella biblioteca sono identificati da un codice.
+
+Per un prestito si tiene nota degli orari e delle date di acquisizione e di riconsegna. 
+
+A seguito di una richiesta viene dapprima consultato l’archivio dei libri disponibili (cioè non in prestito). Se il libro è disponibile, si procede alla ricerca del libro negli scaffali; il libro viene poi classificato come in prestito. Acquisito il libro, viene consegnato al lettore, che procede alla consultazione. Terminata il prestito, il libro viene restituito, reinserito in biblioteca e nuovamente classificato come disponibile.
+ 
