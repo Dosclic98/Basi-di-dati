@@ -1,0 +1,67 @@
+
+PostgreSQL locale
+
+Ogni utente può gestire un’istanza personalizzata del server PostgreSQL.
+
+In questo modo ognuno può configurare il proprio server come desidera, con il non trascurabile vantaggio di poterlo far partire e fermare quando vuole.
+
+La cartella /opt/postgresql-setup contiene i file di configurazione di base, ma non è scrivibile dagli utenti.
+
+Il server è quello standard della distribuzione; con la Fedora 25, è presente PostgreSQL versione 9.5.8.
+
+Setup
+
+Lanciando lo script:
+
+	/opt/postgresql-setup/postgresql-setup.sh
+
+verrà creato nella cartella ~/postgresql tutto il necessario per poter lanciare il server PostgreSQL nella vostra area utente.
+
+È possibile utilizzare uno script per controllare il server (viene copiato insieme ai file di configurazione nella cartella ~/postgresql nella propria area utente).
+
+Per lanciare il server:
+
+	~/postgresql/psql.sh start
+
+Per fermare il server:
+
+	~/postgresql/psql.sh stop
+
+Per fermare e far ripartire il server:
+
+	~/postgresql/psql.sh restart
+
+Prima connessione
+
+Al termine del setup vengono stampati i parametri di connessione al DB. Inizialmente viene utilizzata la matricola per il nome del database, il nome dell’utente, e la password.
+
+Per collegarsi al database serve anche il nome dell’host; con questo setup è necessario utilizzare sempre 127.0.0.1 anziché localhost.
+
+Per effettuare la prima connessione al database da linea di comando, possiamo aprire un nuovo terminale, e lanciare:
+
+	psql -h 127.0.0.1
+
+Aggiungere phpPgAdmin
+
+È possibile installare la propria istanza di Apache HTTPD e poi aggiungere phpPgAdmin per avere una comoda interfaccia web di gestione del database.
+
+Password Iniziale
+
+Al momento la password iniziale per il DB è semplicemente la vostra matricola.
+
+La password del DB non è sincronizzata con la password utilizzata per l’accesso ai computer.
+Cambio password del DB
+
+Per poter cambiare la password è prima necessario collegarsi al DB; per fare questo ci sono due possibilità:
+
+    Lanciare il comando per connettersi al DB:
+
+    psql -h 127.0.0.1
+
+Oppure se avete aggiunto PhpPgAdmin, dopo essersi autenticati, è possibile utilizzare la funzione che consente di eseguire query in SQL (alla cima della pagina, è la prima opzione nel gruppo in alto a destra).
+
+Questa è la query da eseguire per cambiare la password dell’utente:
+
+	ALTER ROLE "username" WITH PASSWORD 'newpassword';
+
+Avendo cura di sostituire username con la propria matricola.
