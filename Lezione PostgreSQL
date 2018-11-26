@@ -1,0 +1,131 @@
+PostgreSQL è un database sia relazionale che a oggetti.
+E'possibile anche installare PostgreSQL sui pc attraverso l installer EnterpriseDB (non con 
+il packet manager).
+Un DBMS gira su una macchina chiamata server. Questo processo resta in attesa su una porta 
+TCP (di default 5432). Ci sono 3 modi di collegarsi al database:
+	1) Client da linea di comando con "psql" a cui passo -u <utente> e -h <host> -p <porta> 
+	2) Usare un client web (phpPgAdmin) che ci fa vedere come il database sia strutturato.
+	3) Con delle librerie di un linguaggio di programmazione (come faremo in programmazione web)
+
+Potremo comunicare con il DBMS attraverso SQL e ci permette di fare 3 cose:1) definire lo schema del database 2)modificare lo schema e il suo contenuto 3)ci permette di interrogarlo con
+delle query.
+SQL si compone di DDL (data definition language) e DML (data manipulation language).
+SQL è un linguaggio interpretato e non compilato. Viene creato un file di testo (script) con estensione .sql che può essere eseguito nel client (con psql) o da client grafico.
+Ci sono keyword (SELECR, FROM, WHERE), identificatori (nomeTabella), quoted identifier
+ ("nomeTabella") e i litteral o costanti (25 oppure 'stringa').
+ 
+SQL: DATA DEFINITION LANGUAGE
+
+E' ciò che ci permetterà di tradurre lo schema logico in modo da farloc apire al DBMS.
+Potremo creare tabelle, definire vincoli e definire domini
+COME CREARE UNA TABELLA
+create table NomeTabella(NomeAttributo1 Dominio1[default ValoreDefault1][Vincoli1],
+						NomeAttributo2 Dominio2[default ValoreDefault2][Vincoli2])
+Se non specifico il valore di default l'attributo viene messo a NULL.
+COME DEFINIRE DOMINI (di base e personalizzati)
+	char(lenght) stringhe a lunghezza fissa
+	varchar(max_lenght) stringhe a lunghezza variabile con specificata la lunghezza massima
+Se la lunghezza non è specificata viene 1.
+	decimal(precisione,scala)
+	decimal(precisione,scala)
+Dove precisione è il numero totale di cifre decimali e scala è il numero di cifre dopo la
+virgola.
+	date che comprende year month e date
+	time(precisione) // per gli orari
+	timestamp(precisione) // per orari in una certa data
+Per estrarre ciascun campo da un attributo di tipo data
+	extract(year from tabella)
+	date_part('year',tabella)
+Esistono anche boolean (booleani true o false), bigint(interi grossi), blob(binary large
+object come immagini video), clob (character large object come lunghi file di testo).
+Posso definire nuovi tipi di dato "tipi di dato opachi" che parte da un tipo di dato base e lo personalizza.
+	create domain Voto
+	as smallint default NULL
+	check (value>=18 AND value <= 30);
+COME DEFINIRE VINCOLI
+Esistono vincoli intrarelazionale (relativi ad una sola tabella) e vincoli interrelazionali
+(relativi a più tabelle).
+Il vincolo lo posso mettere in una riga assieme all attributo o in una riga a se stante al
+fondo.
+Un vincolo intrarelazionale è "not null"
+Un altro è "unique" (nel caso delle chiavi primarie)
+E' diverso dire:
+	Nome varchar(255) not null unique,
+	Cognome varchar(255) not null unique,
+	da
+	Nome varchar(255) not null unique,
+	Cognome varchar(255) not null unique,
+	unique(Nome,Cognome)
+Esiste anche il vincolo di chiave primaria (può essere unico per tabella) ed è equivalente 
+a unique AND not null anche se ha un importanza particolare.
+Un vincolo di integrità interrelazionale è il vincolo di integrità referenziale
+	foreign key ()
+	
+Se un vincolo di integrità viene violato il DBMS rifiuta l'operazione (o posso gestire io
+cosa fare). Se avviene un cambiamento nella tabella esterna che viola la tabella interna
+allora il DBMS mi restituisce un errore. 
+In seguito ad una modifica posso propagare la modifica come:
+	cascade: il valore nell'attributo della tabella esterna viene riportato in tutte le 
+	righe corrispondenti della tabella interna
+	set null: al valore referente viene assegnato il valore nullo al posto del valore
+	modificato nella tabella
+	
+E'possibile andare ad assegnare un nome ad un vincolo per poterlo modificare in caso di
+modifica dello schema.
+	drop schema | domain | table | view
+cancella l'elemento nominato.
+Di base dopo drop c'è restrict ch non cancella una cosa finchè non è vuota (per cancellare
+anche se pieno uso cascade)
+
+SQL: DATA MANIPULATION LANGUAGE
+
+SQL è un linguaggio dichiarativo in cui io dico cosa voglio ottenere e il DBMS determina il
+come.
+	select ListaAttributi
+	from ListaTabelle
+	where Condizione
+Nella from indico dove sono posizionati i dati che mi interessano (fonte)
+Nel where indico la condizione che voglio che le tuple rispettino (è una select dell'
+algebra relazionale)
+La select invece seleziona quali attributi prendere (è proiezione dell algebra
+relazionale)
+Se voglio tutti gli attributi di una tabella scrivo
+	select * from tabella
+La select è più potente di una proiezione siccome posso inserire espressioni.
+L'output di una query è una tabella definita come viene definita dalla query e CI POSSONO
+ESSERE DEI DUPLICATI siccome LE TABELLE SONO MULTI-INSIEMI.
+La clausola where ammette come argomento un espressione booleana.
+wehere è una specie di filtro applicato su ogni tabella ritornato dalla query.
+L'operazione usata per mettere assieme le tabelle è il join, esso si realizza (nel modo 
+errato) scrivenmdo più tabelle nella clausola from e questo mi restituisce il prodotto cartesiano delle tabelle.
+Per fare il teta join specificando gli attributi delle due tabelle che devono rispettare una condizione uso la dot notation 
+	select ListaAttributi
+	from S,SP,P
+	where S.SNum=SP.SNum and P.PNum=SP.PNum
+COME COSTRUIRE UNA QUERY (ordine logico)
+Clausola from (dove vado a reperire l'informazione)
+Clausola wehere (condizioni che devono soddisfare le informazioni) (seleziono le tuple)
+Clausola select (informazioni da mostrare) (seleziono gli attributi del risultato finale)
+Lavorando su multi-inziami posso avere duplicati (dovrò gestirli).
+Posso dire a SQL di restituire i risultati singoli (senza dupplicati) usando la keyword
+distinct dopo select e mi restituisce una tabella senza dupplicati.
+Per gestire i valori nulli introduco is null o is not null nella where. Di default il null
+non viene incluso nella where.
+Posso ordinare i risultati di una query usando: 
+	order by NomeAttributi1 [asc | desc], 
+
+L'inserimento dei dati viene fatto con
+	insert into Tabella(NomeAttributo1,...,NomeAttributon)values(ValoreAttributo1,...,
+	ValoreAttributon)
+Per cancellare tuple da una tabella uso delete
+	delete from Tabella wehere Condizione;
+
+
+
+
+
+
+
+
+
+ 
